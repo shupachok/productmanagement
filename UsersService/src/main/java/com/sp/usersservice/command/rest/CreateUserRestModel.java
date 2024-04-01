@@ -1,18 +1,14 @@
-package com.sp.core.model;
+package com.sp.usersservice.command.rest;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-public class User {
+public class CreateUserRestModel {
 	private final String userId;
 	private final String username;
 	private final String password;
 	private final String email;
 	private final String firstName;
 	private final String lastName;
-	private final PaymentDetails paymentDetails;
-
+	private final CreatePaymentDetailRestModel paymentDetails;
 }
