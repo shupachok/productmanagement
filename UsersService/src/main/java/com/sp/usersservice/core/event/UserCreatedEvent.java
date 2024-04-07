@@ -1,6 +1,5 @@
 package com.sp.usersservice.core.event;
 
-import com.sp.core.model.OrderStatus;
 import com.sp.core.model.PaymentDetails;
 
 import lombok.AllArgsConstructor;

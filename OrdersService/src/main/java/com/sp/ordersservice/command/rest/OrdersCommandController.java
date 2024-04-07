@@ -8,7 +8,6 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,8 +33,10 @@ public class OrdersCommandController {
 		String orderId = UUID.randomUUID().toString();
 		CreateOrderCommand createOrderCommand = CreateOrderCommand.builder()
 				.orderId(orderId)
-				.userId("27b95829-4f3f-4ddf-8983-151ba010e35b").productId(order.getProductId())
-				.quantity(order.getQuantity()).addressId(order.getAddressId()).build();
+				.userId(order.getUserId())
+				.productId(order.getProductId())
+				.quantity(order.getQuantity())
+				.addressId(order.getAddressId()).build();
 		
 		SubscriptionQueryResult<OrderSummary, OrderSummary> queryResult = queryGateway.subscriptionQuery(
 				new FindOrderQuery(orderId)

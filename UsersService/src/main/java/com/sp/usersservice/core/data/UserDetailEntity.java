@@ -24,7 +24,7 @@ public class UserDetailEntity {
 	private String lastName;
 	
 	@OneToOne(mappedBy = "userDetailEntity")
-	private PaymentDetailEntity paymentDetailEntity;
+	private PaymentDetailEntity paymentDetail;
 	
 	@ManyToOne
 	private RoleEntity role;

@@ -1,7 +1,6 @@
 package com.sp.usersservice.command;
 
 import org.axonframework.commandhandling.CommandHandler;
-import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
@@ -10,7 +9,6 @@ import org.springframework.beans.BeanUtils;
 
 import com.sp.core.model.PaymentDetails;
 import com.sp.usersservice.command.commands.CreateUserCommand;
-import com.sp.usersservice.command.rest.CreatePaymentDetailRestModel;
 import com.sp.usersservice.core.event.UserCreatedEvent;
 
 @Aggregate

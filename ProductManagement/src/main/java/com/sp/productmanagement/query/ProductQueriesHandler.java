@@ -1,4 +1,4 @@
-package com.sp.productmanagement.query.rest;
+package com.sp.productmanagement.query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.sp.productmanagement.core.data.ProductEntity;
 import com.sp.productmanagement.core.data.ProductsRepository;
-import com.sp.productmanagement.query.FindProductsQuery;
+import com.sp.productmanagement.query.rest.ProductsRestModel;
 
 @Component
 public class ProductQueriesHandler {
