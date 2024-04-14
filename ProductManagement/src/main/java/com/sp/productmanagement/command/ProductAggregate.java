@@ -45,8 +45,16 @@ public class ProductAggregate {
 	
 	@CommandHandler
 	public void handle(ReserveProductCommand reserveProductCommand) {
+		if(!title.equals(reserveProductCommand.getTitle())) {
+			throw new IllegalArgumentException(String.format("Title in database does not match submitted title (Product Id: %s)",productId));
+		}
+		
+		if(!price.equals(reserveProductCommand.getPrice())) {
+			throw new IllegalArgumentException(String.format("Price in database does not match submitted price (Product Id: %s)",productId));
+		}
+		
 		if(quantity < reserveProductCommand.getQuantity()) {
-			throw new IllegalArgumentException("Insufficient number of Item in stock");
+			throw new IllegalArgumentException(String.format("Insufficient number of Item in stock (Product Id: %s)",productId));
 		}
 		
 		ProductReservedEvent productReservedEvent = ProductReservedEvent
@@ -69,7 +77,6 @@ public class ProductAggregate {
 		.orderId(cancelProductReservationCommand.getOrderId())
 		.userId(cancelProductReservationCommand.getUserId())
 		.quantity(cancelProductReservationCommand.getQuantity())
-		.reason(cancelProductReservationCommand.getReason())
 		.build();
 		
 		AggregateLifecycle.apply(productReservationCanceledEvent);

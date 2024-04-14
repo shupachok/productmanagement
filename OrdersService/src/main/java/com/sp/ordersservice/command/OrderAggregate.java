@@ -1,5 +1,7 @@
 package com.sp.ordersservice.command;
 
+import java.util.List;
+
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -7,11 +9,14 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+import com.sp.core.commands.ConfirmOrderCommand;
 import com.sp.core.events.OrderApprovedEvent;
 import com.sp.core.model.OrderStatus;
+import com.sp.core.model.ProductOrdered;
 import com.sp.ordersservice.command.commands.ApproveOrderCommand;
 import com.sp.ordersservice.command.commands.CreateOrderCommand;
 import com.sp.ordersservice.command.commands.RejectOrderCommand;
+import com.sp.ordersservice.core.events.OrderConfirmedEvent;
 import com.sp.ordersservice.core.events.OrderCreatedEvent;
 import com.sp.ordersservice.core.events.OrderRejectedEvent;
 
@@ -21,11 +26,11 @@ public class OrderAggregate {
 	@AggregateIdentifier
 	private String orderId;
 	private String userId;
-	private String productId;
-	private int quantity;
 	private String addressId;
+	List<ProductOrdered> productOrdered;
 	private OrderStatus orderStatus;
 
+	
 	public OrderAggregate() {
 	}
 	
@@ -41,11 +46,10 @@ public class OrderAggregate {
 	protected void on(OrderCreatedEvent orderCreatedEvent) {
 		this.orderId = orderCreatedEvent.getOrderId();
 		this.userId = orderCreatedEvent.getUserId();
-		this.productId = orderCreatedEvent.getProductId();
-		this.quantity = orderCreatedEvent.getQuantity();
 		this.addressId = orderCreatedEvent.getAddressId();
 		this.orderStatus = orderCreatedEvent.getOrderStatus();
 	}
+	
 	
 	@CommandHandler
 	public void handle(ApproveOrderCommand approveOrderCommand) {
@@ -69,4 +73,25 @@ public class OrderAggregate {
 	protected void on(OrderRejectedEvent orderRejectedEvent) {
 		this.orderStatus = orderRejectedEvent.getOrderStatus();
 	}
+	
+	@CommandHandler
+	public void handle(ConfirmOrderCommand confirmOrderCommand) {
+		OrderConfirmedEvent orderConfirmedEvent = OrderConfirmedEvent
+		.builder()
+		.orderId(confirmOrderCommand.getOrderId())
+		.userId(confirmOrderCommand.getUserId())
+		.orderStatus(confirmOrderCommand.getOrderStatus())
+		.productOrdered(confirmOrderCommand.getProductOrdered())
+		.build();
+		
+		AggregateLifecycle.apply(orderConfirmedEvent);
+	}
+	
+	@EventSourcingHandler
+	protected void on(OrderConfirmedEvent orderConfirmedEvent) {
+		this.orderStatus = orderConfirmedEvent.getOrderStatus();
+		this.productOrdered = orderConfirmedEvent.getProductOrdered();
+	}
+	
+	
 }
