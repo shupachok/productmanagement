@@ -57,6 +57,7 @@ public class OrderEventsHandler {
 		ordersRepository.save(orderEntity);
 	}
 	
+	@EventHandler
 	public void on(OrderConfirmedEvent orderConfirmedEvent) {
 		OrderEntity orderEntity = ordersRepository.findByOrderId(orderConfirmedEvent.getOrderId());
 		orderEntity.setOrderStatus(orderConfirmedEvent.getOrderStatus());

@@ -24,20 +24,24 @@ import com.sp.core.commands.CancelProductReservationCommand;
 import com.sp.core.commands.ConfirmOrderCommand;
 import com.sp.core.commands.ProcessPaymentCommand;
 import com.sp.core.commands.ReserveProductCommand;
+import com.sp.core.commands.SendEmailCommand;
+import com.sp.core.events.EmailDispatchedEvent;
 import com.sp.core.events.OrderApprovedEvent;
 import com.sp.core.events.PaymentProcessedEvent;
 import com.sp.core.events.ProductReservationCanceledEvent;
+import com.sp.core.model.OrderDetail;
 import com.sp.core.model.OrderStatus;
 import com.sp.core.model.OrderSummary;
 import com.sp.core.model.ProductOrdered;
 import com.sp.core.model.User;
+import com.sp.core.query.FetchOrderDetailsQuery;
 import com.sp.core.query.FetchUserPaymentDetailsQuery;
 import com.sp.ordersservice.command.commands.ApproveOrderCommand;
 import com.sp.ordersservice.command.commands.RejectOrderCommand;
 import com.sp.ordersservice.core.events.OrderConfirmedEvent;
 import com.sp.ordersservice.core.events.OrderCreatedEvent;
 import com.sp.ordersservice.core.events.OrderRejectedEvent;
-import com.sp.ordersservice.query.FindOrderQuery;
+import com.sp.ordersservice.query.FindOrderSummaryQuery;
 
 @Saga
 public class OrderSaga {
@@ -208,29 +212,44 @@ public class OrderSaga {
 		commandGateway.send(approveOrderCommand);
 	}
 	
-	@EndSaga
 	@SagaEventHandler(associationProperty = "orderId")
 	public void handle(OrderApprovedEvent orderApprovedEvent) {
 		LOGGER.info("SAGA is complete to approved orderId:"+orderApprovedEvent.getOrderId());
 //		SagaLifecycle.end(); //use this method or use @EndSaga
-		queryUpdateEmitter.emit(FindOrderQuery.class
-				, query -> true
-				,new OrderSummary(orderApprovedEvent.getOrderId()
-						,orderApprovedEvent.getOrderStatus()
-						,""));
 		
-//		FetchOrderDetailsQuery fetchOrderDetailsQuery = new FetchOrderDetailsQuery(orderApprovedEvent.getOrderId());
-//		
-//		OrderDetails orderDetails = queryGateway.query(fetchOrderDetailsQuery, ResponseTypes.instanceOf(OrderDetails.class)).join();
-//		
-//		String userId = orderDetails.getUserId();
-//		 
-//		FetchUserPaymentDetailsQuery fetchUserPaymentDetailsQuery = 
-//					new FetchUserPaymentDetailsQuery(userId);
-//		User user = queryGateway.query(fetchUserPaymentDetailsQuery, ResponseTypes.instanceOf(User.class)).join();
-//		
+		FetchOrderDetailsQuery fetchOrderDetailsQuery = new FetchOrderDetailsQuery(orderApprovedEvent.getOrderId());
+		
+		OrderDetail orderDetail = queryGateway.query(fetchOrderDetailsQuery, ResponseTypes.instanceOf(OrderDetail.class)).join();
+		
+		String userId = orderDetail.getUserId();
 		 
+		FetchUserPaymentDetailsQuery fetchUserPaymentDetailsQuery = 
+					new FetchUserPaymentDetailsQuery(userId);
+		User user = queryGateway.query(fetchUserPaymentDetailsQuery, ResponseTypes.instanceOf(User.class)).join();
+		
+		SendEmailCommand sendEmailCommand = SendEmailCommand.builder()
+		.emailId(UUID.randomUUID().toString())
+		.orderId(orderDetail.getOrderId())
+		.user(user)
+		.productOrdereds(orderDetail.getProductOrdereds())
+		.build();
+		
+		commandGateway.send(sendEmailCommand);
+		
 	}
+	
+	@EndSaga
+	@SagaEventHandler(associationProperty = "orderId")
+	public void handle(EmailDispatchedEvent emailDispatchedEvent) {
+		LOGGER.info("SAGA is complete to send email for orderId:"+emailDispatchedEvent.getOrderId());
+		
+		queryUpdateEmitter.emit(FindOrderSummaryQuery.class
+				, query -> true
+				,new OrderSummary(emailDispatchedEvent.getOrderId()
+						,OrderStatus.APPROVED
+						,""));
+	}
+	
 	
 	@SagaEventHandler(associationProperty = "orderId")
 	public void handle(ProductReservationCanceledEvent productReservationCanceledEvent) {
@@ -247,7 +266,7 @@ public class OrderSaga {
 	@SagaEventHandler(associationProperty = "orderId")
 	public void handle(OrderRejectedEvent orderRejectedEvent) {
 		LOGGER.info("Order is rejected with id:"+orderRejectedEvent.getOrderId());
-		queryUpdateEmitter.emit(FindOrderQuery.class
+		queryUpdateEmitter.emit(FindOrderSummaryQuery.class
 				, query -> true
 				,new OrderSummary(orderRejectedEvent.getOrderId()
 						,orderRejectedEvent.getOrderStatus()

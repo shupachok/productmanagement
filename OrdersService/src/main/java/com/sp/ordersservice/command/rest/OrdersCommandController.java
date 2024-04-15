@@ -20,7 +20,7 @@ import com.sp.core.model.OrderStatus;
 import com.sp.core.model.OrderSummary;
 import com.sp.core.model.ProductOrdered;
 import com.sp.ordersservice.command.commands.CreateOrderCommand;
-import com.sp.ordersservice.query.FindOrderQuery;
+import com.sp.ordersservice.query.FindOrderSummaryQuery;
 
 @RestController
 @RequestMapping("/orders")
@@ -59,7 +59,7 @@ public class OrdersCommandController {
 				.build();
 
 		SubscriptionQueryResult<OrderSummary, OrderSummary> queryResult = queryGateway.subscriptionQuery(
-				new FindOrderQuery(orderId), ResponseTypes.instanceOf(OrderSummary.class),
+				new FindOrderSummaryQuery(orderId), ResponseTypes.instanceOf(OrderSummary.class),
 				ResponseTypes.instanceOf(OrderSummary.class));
 
 		try {
