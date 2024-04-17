@@ -1,10 +1,12 @@
-package com.sp.emailservice.command.rest;
+package com.sp.emailservice.query;
 
 import java.util.Properties;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.axonframework.eventhandling.EventHandler;
+import org.springframework.stereotype.Component;
+
+import com.sp.core.events.EmailDispatchedEvent;
+import com.sp.core.model.User;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -15,26 +17,34 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
-@RestController
-@RequestMapping("/emails")
-public class EamilsCommandController {
+@Component
+public class EmailEventHandler {
 
-	@PostMapping
-	public String sendEmail() throws MessagingException {
-		String to = "shupachok@gmail.com";
-		String subject = "Test Email";
-		String body = "This is a test email from Jakarta Mail.";
+	@EventHandler
+	public void on(EmailDispatchedEvent emailDispatchedEvent) {
+		
+		User user = emailDispatchedEvent.getUser();
+		String to = user.getEmail();
+		String orderId = emailDispatchedEvent.getOrderId();
+		String name = user.getFirstName()+"  "+user.getLastName();
+		String subject = String.format("Order # [%s] - Thanks for your purchase",orderId);
+		String body = String.format("""
+				Hi %1$s,
+
+				Thanks for your order!.
+
+				This email confirms your order [%2$s] has been approved.
+				""",name,orderId);
 
 		sendMail(to, subject, body);
 
-		return "send email";
 	}
-
+	
 	public void sendMail(String to, String subject, String body) {
 		// provide sender's email ID
 		String from = "hi@demomailtrap.com";
 		final String username = "api";
-		final String password = "49128738cf5f95904242a6e27da2dd6f";
+		final String password = "1234";
 		// provide Mailtrap's host address
 		String host = "live.smtp.mailtrap.io";
 		// configure Mailtrap's SMTP server details
