@@ -1,5 +1,7 @@
 package com.sp.usersservice.query.rest;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -14,6 +16,6 @@ public class UserRestModel {
 	private String lastName;
 	
 	private PaymentDetailRestModel paymentDetail;
-	private RoleRestModel role;
+	private List<RoleRestModel> role;
 
 }

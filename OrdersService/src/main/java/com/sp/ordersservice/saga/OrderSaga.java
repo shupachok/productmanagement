@@ -140,7 +140,7 @@ public class OrderSaga {
 		
 		LOGGER.info("Successful fetch user payment detail user:"+user.getFirstName());
 		
-		scheduleId = deadlineManager.schedule(Duration.of(10, ChronoUnit.SECONDS),
+		scheduleId = deadlineManager.schedule(Duration.of(1, ChronoUnit.DAYS),
 				PAYMENT_PROCESSING_DEADLINE, orderConfirmedEvent);
 		
 //		if(true) return; //test schedule
