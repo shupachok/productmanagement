@@ -3,6 +3,7 @@ package com.sp.productmanagement.command.rest;
 import java.util.UUID;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class ProductsCommandController {
 	}
 
 	@PostMapping
+	@PreAuthorize("hasRole('ADMIN') || hasRole('USER')")
 	public String createProduct(@Valid @RequestBody CreateProductRestModel createProductRestModel) {
 
 		CreateProductCommand createProductCommand = CreateProductCommand.builder()

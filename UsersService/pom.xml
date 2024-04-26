@@ -43,11 +43,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.sp</groupId>
 			<artifactId>JwtAuthorities</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

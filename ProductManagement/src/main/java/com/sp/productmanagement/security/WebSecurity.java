@@ -1,4 +1,4 @@
-package com.sp.usersservice.security;
+package com.sp.productmanagement.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,24 +11,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
-
-import com.sp.usersservice.security.service.UserService;
 
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
 
-	private UserService userService;
-
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
 	private Environment environment;
 
-	public WebSecurity(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, Environment environment) {
-		this.userService = userService;
-		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+	public WebSecurity(Environment environment) {
 		this.environment = environment;
 	}
 
@@ -38,26 +29,12 @@ public class WebSecurity {
 		AuthenticationManagerBuilder authenticationManagerBuilder = 
 				http.getSharedObject(AuthenticationManagerBuilder.class);
 		
-		authenticationManagerBuilder.userDetailsService(userService)
-		.passwordEncoder(bCryptPasswordEncoder);
-		
 		AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-
-        AuthenticationFilter authenticationFilter = 
-        		new AuthenticationFilter(authenticationManager,userService,environment);
-        authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
 
 		http
 		.authorizeHttpRequests(
 				auth -> auth.anyRequest().permitAll()
 		)
-//		.authorizeHttpRequests(
-//				auth -> auth.requestMatchers("/**").authenticated();
-//		)
-//		.authorizeHttpRequests(
-//				auth -> auth.requestMatchers("/h2-console/**").permitAll()
-//		)
-        .addFilter(authenticationFilter)
         .addFilter(new AuthorizationFilter(authenticationManager, environment))
         .authenticationManager(authenticationManager)
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
