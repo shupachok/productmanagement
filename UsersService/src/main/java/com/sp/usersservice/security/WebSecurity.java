@@ -3,6 +3,7 @@ package com.sp.usersservice.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -48,16 +49,22 @@ public class WebSecurity {
         authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
 
 		http
+//		.authorizeHttpRequests(
+//				auth -> auth.anyRequest().permitAll()
+//		)
+//		.authorizeHttpRequests(
+//				auth -> auth.requestMatchers("/**").authenticated()
+//		)
 		.authorizeHttpRequests(
-				auth -> auth.anyRequest().permitAll()
+				auth -> auth.requestMatchers("/h2-console/**").permitAll()
 		)
-//		.authorizeHttpRequests(
-//				auth -> auth.requestMatchers("/**").authenticated();
-//		)
-//		.authorizeHttpRequests(
-//				auth -> auth.requestMatchers("/h2-console/**").permitAll()
-//		)
-        .addFilter(authenticationFilter)
+		.authorizeHttpRequests(
+				auth -> auth.requestMatchers(HttpMethod.POST,"/users").permitAll()
+		)
+		.authorizeHttpRequests(
+				auth -> auth.anyRequest().authenticated()
+		)
+		.addFilter(authenticationFilter)
         .addFilter(new AuthorizationFilter(authenticationManager, environment))
         .authenticationManager(authenticationManager)
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
