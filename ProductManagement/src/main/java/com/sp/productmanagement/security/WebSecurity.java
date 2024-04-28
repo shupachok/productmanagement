@@ -3,6 +3,7 @@ package com.sp.productmanagement.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -33,7 +34,13 @@ public class WebSecurity {
 
 		http
 		.authorizeHttpRequests(
-				auth -> auth.anyRequest().permitAll()
+				auth -> auth.requestMatchers("/h2-console/**").permitAll()
+		)
+		.authorizeHttpRequests(
+				auth -> auth.requestMatchers(HttpMethod.GET,"/products").permitAll()
+		)
+		.authorizeHttpRequests(
+				auth -> auth.anyRequest().authenticated()
 		)
         .addFilter(new AuthorizationFilter(authenticationManager, environment))
         .authenticationManager(authenticationManager)
