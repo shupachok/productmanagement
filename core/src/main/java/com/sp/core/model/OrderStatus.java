@@ -1,5 +1,5 @@
 package com.sp.core.model;
 
 public enum OrderStatus {
-	CREATED, APPROVED, REJECTED
+	CREATED,PRE_APPROVED, APPROVED, REJECTED
 }

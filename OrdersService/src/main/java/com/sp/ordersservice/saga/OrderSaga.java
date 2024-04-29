@@ -99,7 +99,7 @@ public class OrderSaga {
 		ConfirmOrderCommand confirmOrderCommand = ConfirmOrderCommand
 		.builder()
 		.orderId(orderCreatedEvent.getOrderId())
-		.orderStatus(OrderStatus.CREATED)
+		.orderStatus(OrderStatus.PRE_APPROVED)
 		.userId(orderCreatedEvent.getUserId())
 		.productOrdered(orderCreatedEvent.getProductOrdered())
 		.build();

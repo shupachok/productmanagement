@@ -34,8 +34,17 @@ public class OrderEventsHandler {
 	public void on(OrderCreatedEvent orderCreatedEvent) {
 		OrderEntity orderEntity = new OrderEntity();
 		BeanUtils.copyProperties(orderCreatedEvent, orderEntity);
-
 		ordersRepository.save(orderEntity);
+		
+		List<ProductOrdered> productOrdereds = orderCreatedEvent.getProductOrdered();
+		for (ProductOrdered productOrdered : productOrdereds) {
+
+			ProductOrderedEntity productOrderedEntity = new ProductOrderedEntity();
+			BeanUtils.copyProperties(productOrdered, productOrderedEntity);
+			productOrderedEntity.setOrder(orderEntity);
+			
+			productOrderedRepository.save(productOrderedEntity);
+		}
 	}
 
 	@EventHandler
@@ -62,15 +71,5 @@ public class OrderEventsHandler {
 		OrderEntity orderEntity = ordersRepository.findByOrderId(orderConfirmedEvent.getOrderId());
 		orderEntity.setOrderStatus(orderConfirmedEvent.getOrderStatus());
 		ordersRepository.save(orderEntity);
-		
-		List<ProductOrdered> productOrdereds = orderConfirmedEvent.getProductOrdered();
-		for (ProductOrdered productOrdered : productOrdereds) {
-
-			ProductOrderedEntity productOrderedEntity = new ProductOrderedEntity();
-			BeanUtils.copyProperties(productOrdered, productOrderedEntity);
-			productOrderedEntity.setOrder(orderEntity);
-			
-			productOrderedRepository.save(productOrderedEntity);
-		}
 	}
 }

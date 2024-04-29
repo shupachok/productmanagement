@@ -54,6 +54,7 @@ public class OrdersCommandController {
 
 		CreateOrderCommand createOrderCommand = CreateOrderCommand.builder()
 				.orderId(orderId).userId(order.getUserId())
+				.orderStatus(OrderStatus.CREATED)
 				.addressId(order.getAddressId())
 				.productOrdered(productOrdereds)
 				.build();

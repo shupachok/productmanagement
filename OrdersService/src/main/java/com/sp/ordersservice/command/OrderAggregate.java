@@ -48,6 +48,7 @@ public class OrderAggregate {
 		this.userId = orderCreatedEvent.getUserId();
 		this.addressId = orderCreatedEvent.getAddressId();
 		this.orderStatus = orderCreatedEvent.getOrderStatus();
+		this.productOrdered = orderCreatedEvent.getProductOrdered();
 	}
 	
 	
@@ -90,7 +91,6 @@ public class OrderAggregate {
 	@EventSourcingHandler
 	protected void on(OrderConfirmedEvent orderConfirmedEvent) {
 		this.orderStatus = orderConfirmedEvent.getOrderStatus();
-		this.productOrdered = orderConfirmedEvent.getProductOrdered();
 	}
 	
 	
