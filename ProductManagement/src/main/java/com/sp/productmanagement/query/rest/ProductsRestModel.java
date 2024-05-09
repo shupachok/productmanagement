@@ -8,6 +8,7 @@ import lombok.Data;
 public class ProductsRestModel {
 	private String productId;
 	private String title;
+	private String pathImage;
 	private BigDecimal price;
 	private Integer quantity;
 }

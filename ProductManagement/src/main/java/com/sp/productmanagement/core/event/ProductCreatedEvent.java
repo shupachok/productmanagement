@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class ProductCreatedEvent {
 	private String productId;
 	private String title;
+	private String pathImage;
 	private BigDecimal price;
 	private Integer quantity;
 }

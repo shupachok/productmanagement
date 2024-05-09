@@ -21,6 +21,7 @@ public class ProductAggregate {
 	@AggregateIdentifier
 	private String productId;
 	private String title;
+	private String pathImage;
 	private BigDecimal price;
 	private Integer quantity;
 	
@@ -90,6 +91,7 @@ public class ProductAggregate {
 	@EventSourcingHandler
 	public void on(ProductCreatedEvent productCreatedEvent) {
 		this.productId = productCreatedEvent.getProductId();
+		this.pathImage = productCreatedEvent.getPathImage();
 		this.price = productCreatedEvent.getPrice();
 		this.title = productCreatedEvent.getTitle();
 		this.quantity = productCreatedEvent.getQuantity();

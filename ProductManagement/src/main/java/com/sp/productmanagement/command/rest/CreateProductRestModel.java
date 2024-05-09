@@ -2,6 +2,8 @@ package com.sp.productmanagement.command.rest;
 
 import java.math.BigDecimal;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +13,8 @@ public class CreateProductRestModel {
 
 	@NotBlank(message = "Product title is a required field")
 	private String title;
+
+	private MultipartFile image;
 	
 	@Min(value=1,message = "Price cannot be lower than 1")
 	private BigDecimal price;

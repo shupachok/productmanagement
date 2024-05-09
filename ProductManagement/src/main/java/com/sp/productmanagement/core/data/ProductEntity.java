@@ -21,6 +21,7 @@ public class ProductEntity implements Serializable {
 	private String productId;
 	@Column(unique = true)
 	private String title;
+	private String pathImage;
 	private BigDecimal price;
 	private Integer quantity;
 }
